@@ -113,7 +113,7 @@ int createUser(char *u,char *p)  //fail return 0
 	UserNumber++;
 	return 0;
 }
-void endGame(int game,int loserfd)//loserfd fd
+void endGame(int game,int loserfd,int quit)//loserfd fd
 {
 	int winFd = (Game[game].fd[0]==loserfd)? Game[game].fd[1] : Game[game].fd[0];
 	int loserID= Connection[loserfd].userId;
@@ -126,7 +126,7 @@ void endGame(int game,int loserfd)//loserfd fd
 	Connection[loserfd].game=0;
 
 	unsigned int packet=7<<28; //lose
-	saveSend(loserfd,&packet,4,0);
+	if (!quit) saveSend(loserfd,&packet,4,0);
 	packet=8<<28;
 	saveSend(winFd,&packet,4,0);
 
@@ -138,7 +138,7 @@ void endGame(int game,int loserfd)//loserfd fd
 	UserInfo[loserID].lose++;
 
 	sendInfo(winFd);
-	sendInfo(loserfd);
+	if (!quit) sendInfo(loserfd);
 }
 //----------------------handle---------------
 int handleLogout(int fd)
@@ -148,7 +148,7 @@ int handleLogout(int fd)
 		bzero(&Game[Connection[fd].game],sizeof(Game[0]));
 	}
 	if (Connection[fd].state==2) {
-		endGame(Connection[fd].game,fd);
+		endGame(Connection[fd].game,fd,1);
 	}
 	bzero(&Connection[fd],sizeof(Connection[0]));
 	close(fd);           // bye!
@@ -485,12 +485,12 @@ void run(int room){
 					Game[room].bullet[i][j].state=0; 
 					Game[room].ship[i^1].hp -= damage; 
 					printf("damage %d %d\n",damage,Game[room].ship[i^1].hp );
-					if (Game[room].ship[i^1].hp < 1) endGame(room,Game[room].fd[i^1]);
+					if (Game[room].ship[i^1].hp < 1) endGame(room,Game[room].fd[i^1],0);
 				}
 
 			}
 		}
-		
+
 	}
 	send_pos(room);
 
