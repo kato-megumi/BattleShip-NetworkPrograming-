@@ -45,6 +45,7 @@ int handleLogin(int fd,char *u,char *p);
 int handleSignup(int fd,char *u,char *p);
 int handleUpgrade(int fd,char a);
 
+void send_mphp(int room);
 void sendInfo(int fd);
 void shot(int room, int ship);
 void run(int room);
@@ -409,6 +410,7 @@ void gameStart(int game)
 	int user1 = Connection[Game[game].fd[1]].userId;
 	Game[game].ship[0]=(struct Ship){0,20,20,0,0,UserInfo[user0].mp,UserInfo[user0].hp,0,UserInfo[user0].atk,UserInfo[user0].def}; 
 	Game[game].ship[1]=(struct Ship){0,900,670,0,0,UserInfo[user1].mp,UserInfo[user1].hp,60,UserInfo[user1].atk,UserInfo[user1].def}; 
+	send_mphp(game);
 }
 void left(int room, int ship){
 	unsigned int a = Game[room].ship[ship].angle;
@@ -442,7 +444,16 @@ void send_(int room,int ship,int type){
 	saveSend(fd1,&packet,4,0);
 }
 void send_mphp(int room){
-	//todo
+	unsigned int packet;
+	for (int i = 0; i < 2; ++i)
+	{
+		packet =2<<28;
+		packet |= ((Game[room].ship[i].mp<<14) + Game[room].ship[i].hp);
+		printf("%d %d \n",Game[room].ship[i].mp,Game[room].ship[i].hp );
+		saveSend(Game[room].fd[i],&packet,4,0);
+		packet|=1<<28;
+		saveSend(Game[room].fd[i^1],&packet,4,0);
+	}
 }
 void send_shot(int room,int ship){
 	send_(room,ship,4);
@@ -453,6 +464,8 @@ void send_pos(int room){
 }
 void shot(int room, int ship){
 	int angle = Game[room].ship[ship].angle;
+	if (Game[room].ship[ship].mp==0) return;
+	Game[room].ship[ship].mp--;
 	for (int i = 0; i < 100; ++i)
 	{
 		if (!Game[room].bullet[ship][i].state) {Game[room].bullet[ship][i] 
@@ -461,6 +474,7 @@ void shot(int room, int ship){
 		}
 	}
 	send_shot(room,ship);
+	send_mphp(room);
 }
 void run(int room){
 	int damage;
@@ -485,6 +499,7 @@ void run(int room){
 					Game[room].bullet[i][j].state=0; 
 					Game[room].ship[i^1].hp -= damage; 
 					printf("damage %d %d\n",damage,Game[room].ship[i^1].hp );
+					send_mphp(room);
 					if (Game[room].ship[i^1].hp < 1) endGame(room,Game[room].fd[i^1],0);
 				}
 

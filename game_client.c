@@ -50,6 +50,7 @@ struct Bullet
 SDL_Rect rect[2] ={{0,0,40,40},{880,650,40,40}} ;
 SDL_Rect rec = { 40,0,40,40};
 SDL_Rect recb_ = {0,0,32,64};
+SDL_Rect selfhp,selfmp,enemyhp,enemymp;
 void create_bullet(unsigned int Packet)
 {
 	int angle = Packet%0x80;
@@ -91,9 +92,11 @@ void handle(){
 			case 1:
 			set_pos(Packet);break;
 			case 2:
-			player[0].mp = (Packet >> 14)&0x3fff; player[0].hp = Packet&0x3fff;break;
+			player[0].mp = (Packet >> 14)&0x3fff; player[0].hp = Packet&0x3fff;
+			printf("0: %d %d\n", player[0].mp,player[0].hp);break;
 			case 3:
-			player[1].mp = (Packet >> 14)&0x3fff; player[1].hp = Packet&0x3fff;break;
+			player[1].mp = (Packet >> 14)&0x3fff; player[1].hp = Packet&0x3fff;
+			printf("1: %d %d\n", player[1].mp,player[1].hp);break;
 			case 4:
 			create_bullet(Packet);break;
 			case 5:
@@ -138,6 +141,17 @@ void render()
 			}
 		}
 	}
+	selfmp =(SDL_Rect) {50+890,5,4,player[0].mp};
+	selfhp =(SDL_Rect) {50+895,5,4,player[0].hp};
+	enemymp =(SDL_Rect){50+910,5,4,player[1].mp};
+	enemyhp =(SDL_Rect){50+915,5,4,player[1].hp};
+	SDL_SetRenderDrawColor( gRenderer, 255, 0, 0, 255 );
+	SDL_RenderFillRect( gRenderer, &selfhp);
+	SDL_RenderFillRect( gRenderer, &enemyhp);
+	SDL_SetRenderDrawColor( gRenderer, 0, 255, 0, 255 );
+	SDL_RenderFillRect( gRenderer, &selfmp);
+	SDL_RenderFillRect( gRenderer, &enemymp);
+	SDL_SetRenderDrawColor( gRenderer, 255, 255, 255, 255 );
 	SDL_RenderPresent( gRenderer ); 
 }
 

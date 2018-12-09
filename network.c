@@ -56,7 +56,7 @@ int recv_loop(void *a)
 	int re = recv(sockfd,&p,1,MSG_DONTWAIT); // or should we wait
 	if (re>0)
 	{
-		printf("%d.",p);
+		// printf("%d.",p);
 		if ((p < UPGRADE_F) && (logined) ){return 1;}
 
 		switch(p){

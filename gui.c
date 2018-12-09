@@ -34,7 +34,6 @@ void onLoginButtonClicked(GtkWidget *widget, gpointer gp)
 {
 	strncpy(username, (char *)gtk_entry_get_text(GTK_ENTRY(inputUsername)),32);
 	strncpy(password, (char *)gtk_entry_get_text(GTK_ENTRY(inputPassword)),32);
-	printf("%s\n",password );
 	if (strlen(username) < 1 || strlen(password) < 1)
 		showMessage(login_window, GTK_MESSAGE_WARNING, sLOGIN_FAILED, sNOT_EMPTY);
 	else login(username,password);
@@ -106,7 +105,7 @@ void initMain()
 }
 void switchMain(){
 	logined =1 ;
-	printf("switchMain\n");
+	// printf("switchMain\n");
 	// gtk_main_quit();
 	gtk_widget_destroy(login_window);
 	// g_timeout_add(100,recv_loop,NULL);
@@ -115,9 +114,7 @@ void switchMain(){
 }
 void switchGame()
 {
-	printf(".\n");
 	gtk_widget_hide(window);
-	printf(".\n");
 	g_source_remove(loopEvent);
 
 	if (game()) showMessage(NULL, GTK_MESSAGE_WARNING, sYOU_WIN, "");
