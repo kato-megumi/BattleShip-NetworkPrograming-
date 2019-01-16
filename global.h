@@ -20,3 +20,4 @@ enum sHeader{LOGIN_F,LOGIN_S,SIGNUP_F,SIGNUP_S,UPGRADE_F,UPGRADE_S,INFO,GAME_ACK
 enum upHeader{HPUP,MPUP,ATKUP,DEFUP};
 //-------------constant----------------
 #define SERV_PORT 6969 /*port*/
+

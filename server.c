@@ -59,7 +59,7 @@ fd_set readfds, master;
 //---------------------------------------------
 float distance(float x1,float x2,float y1, float y2){return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));}
 
-int saveSend(int fd, void *buf,size_t len,int flags)
+int safeSend(int fd, void *buf,size_t len,int flags)
 {
 	// char *p= buf;
 	// printf("send %d: %d\n",fd,	p[0] );
@@ -72,7 +72,7 @@ int saveSend(int fd, void *buf,size_t len,int flags)
 void reply(int fd,int a)
 {
 	char p = a;
-	saveSend(fd,&p,1,0);
+	safeSend(fd,&p,1,0);
 }
 void initAuth()
 {
@@ -127,9 +127,9 @@ void endGame(int game,int loserfd,int quit)//loserfd fd
 	Connection[loserfd].game=0;
 
 	unsigned int packet=7<<28; //lose
-	if (!quit) saveSend(loserfd,&packet,4,0);
+	if (!quit) safeSend(loserfd,&packet,4,0);
 	packet=8<<28;
-	saveSend(winFd,&packet,4,0);
+	safeSend(winFd,&packet,4,0);
 
 	printf("game %d end\n", game);
 	printf("%s win %s lose\n",UserInfo[winnerID].user,UserInfo[loserID].user );
@@ -252,7 +252,7 @@ void sendInfo(int fd){
 	if (!(Connection[fd].userId) || Connection[fd].state) return;
 	memcpy(p+1,&UserInfo[Connection[fd].userId],sizeof(UserInfo[0]));
 	p[0]=INFO;
-	saveSend(fd,p,sizeof(UserInfo[0])+1,0);
+	safeSend(fd,p,sizeof(UserInfo[0])+1,0);
 }
 int handleLogin(int fd,char *u,char *p)
 {
@@ -438,10 +438,10 @@ void send_(int room,int ship,int type){
 	packet |= y<<7;
 	packet |= x<<17;
 	packet ^= (ship<<27);
-	saveSend(fd0,&packet,4,0);
+	safeSend(fd0,&packet,4,0);
 
 	packet ^= 0x8000000;
-	saveSend(fd1,&packet,4,0);
+	safeSend(fd1,&packet,4,0);
 }
 void send_mphp(int room){
 	unsigned int packet;
@@ -450,9 +450,9 @@ void send_mphp(int room){
 		packet =2<<28;
 		packet |= ((Game[room].ship[i].mp<<14) + Game[room].ship[i].hp);
 		printf("%d %d \n",Game[room].ship[i].mp,Game[room].ship[i].hp );
-		saveSend(Game[room].fd[i],&packet,4,0);
+		safeSend(Game[room].fd[i],&packet,4,0);
 		packet|=1<<28;
-		saveSend(Game[room].fd[i^1],&packet,4,0);
+		safeSend(Game[room].fd[i^1],&packet,4,0);
 	}
 }
 void send_shot(int room,int ship){

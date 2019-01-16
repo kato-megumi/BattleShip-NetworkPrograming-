@@ -14,10 +14,10 @@
 // const int SCREEN_HEIGHT = 690;
 // const int SCREEN_WIDTH = 920;
 SDL_Rect rect_screen = {0,0,920,690};
-
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
 SDL_Texture* tplayer;
+SDL_Texture* teplayer;
 SDL_Texture* bg;
 SDL_Texture* tbullet;
 SDL_Renderer* gRenderer = NULL; 
@@ -122,7 +122,7 @@ void render()
 	SDL_RenderClear( gRenderer ); 
 	SDL_RenderCopy( gRenderer, bg, NULL,&rect_screen);
 	SDL_RenderCopyEx( gRenderer, tplayer, &rec, &rect[0],(double)player[0].angle,NULL,SDL_FLIP_NONE); //render player ship
-	SDL_RenderCopyEx( gRenderer, tplayer, &rec, &rect[1],(double)player[1].angle,NULL,SDL_FLIP_NONE); //render enemy ship
+	SDL_RenderCopyEx( gRenderer, teplayer, &rec, &rect[1],(double)player[1].angle,NULL,SDL_FLIP_NONE); //render enemy ship
 	for (int j = 0; j < 2; ++j)
 	{
 		for (int i = 0; i < 100; ++i)
@@ -141,10 +141,10 @@ void render()
 			}
 		}
 	}
-	selfmp =(SDL_Rect) {50+890,5,4,player[0].mp};
-	selfhp =(SDL_Rect) {50+895,5,4,player[0].hp};
-	enemymp =(SDL_Rect){50+910,5,4,player[1].mp};
-	enemyhp =(SDL_Rect){50+915,5,4,player[1].hp};
+	selfmp =(SDL_Rect) {10,04,player[0].mp,4};
+	selfhp =(SDL_Rect) {10,8,player[0].hp,4};
+	enemymp =(SDL_Rect){10,SCREEN_HEIGHT-12,player[1].mp,4};
+	enemyhp =(SDL_Rect){10,SCREEN_HEIGHT-8,player[1].hp,4};
 	SDL_SetRenderDrawColor( gRenderer, 255, 0, 0, 255 );
 	SDL_RenderFillRect( gRenderer, &selfhp);
 	SDL_RenderFillRect( gRenderer, &enemyhp);
@@ -195,7 +195,7 @@ int game()
 	winlose=-1;
 	SDL_Init( SDL_INIT_VIDEO );
 	//Create window
-	gWindow = SDL_CreateWindow( "Battle Ship I", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+	gWindow = SDL_CreateWindow( "Battle Ship I", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
 	//Create renderer for window
 	gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED ); 
 	//Initialize renderer color 
@@ -205,6 +205,7 @@ int game()
 	IMG_Init( IMG_INIT_JPG );
 
 	tplayer = loadTexture( "./spaceship.png" );
+	teplayer = loadTexture( "./spaceship_enemy.png" );
 	bg = loadTexture( "./background.jpg" );
 	tbullet = loadTexture("./fire_blue.png");
 	bzero(bullets,sizeof(bullets));
